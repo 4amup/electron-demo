@@ -1,6 +1,10 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, Menu, Tray } = require('electron')
+const path = require('path');
 
-function createWindow () {   
+// 托盘对象
+let tray = null
+
+function createWindow() {
   // 创建浏览器窗口
   const win = new BrowserWindow({
     width: 800,
@@ -10,11 +14,25 @@ function createWindow () {
     }
   })
 
+  tray = new Tray(path.join(__dirname, 'resources/icons/tray.png'))
+  const contextMenu = Menu.buildFromTemplate([
+    { label: '设置', type: 'normal' },
+    { label: '意见反馈', type: 'normal' },
+    { label: '帮助', type: 'normal' },
+    { label: '设置', type: 'normal' },
+    { label: '关于', type: 'normal' },
+    { label: '退出', type: 'normal', click: () => { app.quit() } }
+  ])
+  tray.setToolTip('ShowKeys')
+  tray.setContextMenu(contextMenu)
+  // 单击托盘图标，显示主窗口
+  tray.on("click", () => win.show())
+
   // 并且为你的应用加载index.html
   win.loadFile('index.html')
 
   // 打开开发者工具
-  win.webContents.openDevTools()
+  // win.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished
@@ -41,3 +59,17 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. 也可以拆分成几个文件，然后用 require 导入。
+// app.on('ready', () => {
+//   tray = new Tray(path.join(__dirname,'resources/icons/tray.png'))
+//   const contextMenu = Menu.buildFromTemplate([
+//     { label: '设置', type: 'normal' },
+//     { label: '意见反馈', type: 'normal' },
+//     { label: '帮助', type: 'normal' },
+//     { label: '设置', type: 'normal' },
+//     { label: '关于', type: 'normal' }
+//   ])
+//   tray.setToolTip('ShowKeys')
+//   tray.setContextMenu(contextMenu)
+//   // 单击托盘图标，显示主窗口
+//   tray.on("click", () => win.show())
+// })
