@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, Tray } = require('electron')
+const { app, BrowserWindow, Menu, Tray, globalShortcut } = require('electron')
 const path = require('path');
 
 // 托盘对象
@@ -39,7 +39,11 @@ function createWindow() {
 // initialization and is ready to create browser windows.
 // 部分 API 在 ready 事件触发后才能使用。
 app.whenReady().then(createWindow)
-
+app.whenReady().then(() => {
+  globalShortcut.register('CommandOrControl+X', () => {
+    console.log('CommandOrControl+X is pressed')
+  })
+})
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // 在 macOS 上，除非用户用 Cmd + Q 确定地退出，
