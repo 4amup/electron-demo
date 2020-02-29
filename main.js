@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, Tray, globalShortcut } = require('electron')
-const path = require('path');
+const path = require('path')
+const spawn = require('child_process').spawn
 
 // 托盘对象
 let tray = null
@@ -42,6 +43,8 @@ app.whenReady().then(createWindow)
 app.whenReady().then(() => {
   globalShortcut.register('CommandOrControl+X', () => {
     console.log('CommandOrControl+X is pressed')
+    let childProcess = spawn('./resources/cpp/getPid.exe');
+    childProcess.stdout.on('data', (data) => { console.log(data.toString())});
   })
 })
 // Quit when all windows are closed.
@@ -63,17 +66,3 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. 也可以拆分成几个文件，然后用 require 导入。
-// app.on('ready', () => {
-//   tray = new Tray(path.join(__dirname,'resources/icons/tray.png'))
-//   const contextMenu = Menu.buildFromTemplate([
-//     { label: '设置', type: 'normal' },
-//     { label: '意见反馈', type: 'normal' },
-//     { label: '帮助', type: 'normal' },
-//     { label: '设置', type: 'normal' },
-//     { label: '关于', type: 'normal' }
-//   ])
-//   tray.setToolTip('ShowKeys')
-//   tray.setContextMenu(contextMenu)
-//   // 单击托盘图标，显示主窗口
-//   tray.on("click", () => win.show())
-// })
