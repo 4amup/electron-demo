@@ -1,15 +1,18 @@
-const { app, BrowserWindow, Menu, Tray, globalShortcut } = require('electron')
+const { app, BrowserWindow, Menu, Tray, globalShortcut, dialog } = require('electron')
 const path = require('path')
 const spawn = require('child_process').spawn
 
 // 托盘对象
 let tray = null
+let sheet = null
 
 function createWindow() {
   // 创建浏览器窗口
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    show: false,
+    icon: './resources/icons/sheet.ico',
     webPreferences: {
       nodeIntegration: true
     }
@@ -26,6 +29,7 @@ function createWindow() {
   ])
   tray.setToolTip('ShowKeys')
   tray.setContextMenu(contextMenu)
+  
   // 单击托盘图标，显示主窗口
   tray.on("click", () => win.show())
 
@@ -36,17 +40,56 @@ function createWindow() {
   // win.webContents.openDevTools()
 }
 
+// 创建一个对话框，或者一个不置顶的窗口，待测试实现
+function showSheet() {
+  if (sheet.isVisible()) {
+    sheet.hide()
+  } else {
+    sheet.show()
+  }
+  let result = sheet.isVisible()? "open" : "colse"
+  console.log("CommandOrControl+X is pressed, sheet page is " + result)
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // 部分 API 在 ready 事件触发后才能使用。
 app.whenReady().then(createWindow)
-app.whenReady().then(() => {
-  globalShortcut.register('CommandOrControl+X', () => {
-    console.log('CommandOrControl+X is pressed')
-    let childProcess = spawn('./resources/cpp/getPid.exe');
-    childProcess.stdout.on('data', (data) => { console.log(data.toString())});
+
+// 注册快捷键
+app.on('ready', () => {
+  const ret = globalShortcut.register('CommandOrControl+X', showSheet)
+  // const ret = globalShortcut.register('Alt', showSheet)
+
+  if (!ret) {
+    console.log('registration failed')
+  }
+
+  // 检查快捷键是否注册成功
+  console.log("快捷键是否注册成功？" + globalShortcut.isRegistered('CommandOrControl+X'))
+  sheet = new BrowserWindow({
+    width: 800,
+    height: 600,
+    frame: false,
+    center: true,
+    show: false,
+    resizable: false,
+    transparent: true,
+    alwaysOnTop: true,
+    webPreferences: {
+      // devTools: false //关闭调试工具
+      devTools: true //关闭调试工具
+    },
+    icon: './resources/icons/sheet.ico'
   })
+  sheet.loadFile('sheet.html')  
+  // 打开开发者工具
+  // sheet.webContents.openDevTools()
+  console.log("sheet page创建成功！")
 })
+
+// app.on('accessibility-support-changed')
+
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // 在 macOS 上，除非用户用 Cmd + Q 确定地退出，
