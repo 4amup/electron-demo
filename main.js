@@ -1,10 +1,13 @@
-const { app, BrowserWindow, Menu, Tray, globalShortcut, dialog } = require('electron')
+const { app, BrowserWindow, Menu, Tray, globalShortcut, ipcMain } = require('electron')
 const path = require('path')
+const fs = require('fs')
 const spawn = require('child_process').spawn
 
 // 托盘对象
 let tray = null
 let sheet = null
+let jsonfile = path.join(__dirname, './db.json')
+var json = JSON.parse(fs.readFileSync(jsonfile))
 
 function createWindow() {
   // 创建浏览器窗口
@@ -29,7 +32,7 @@ function createWindow() {
   ])
   tray.setToolTip('ShowKeys')
   tray.setContextMenu(contextMenu)
-  
+
   // 单击托盘图标，显示主窗口
   tray.on("click", () => win.show())
 
@@ -42,12 +45,13 @@ function createWindow() {
 
 // 创建一个对话框，或者一个不置顶的窗口，待测试实现
 function showSheet() {
+  sheet.webContents.send('main-process-messages', json.ShowKeys);
   if (sheet.isVisible()) {
     sheet.hide()
   } else {
     sheet.show()
   }
-  let result = sheet.isVisible()? "open" : "colse"
+  let result = sheet.isVisible() ? "open" : "colse"
   console.log("CommandOrControl+X is pressed, sheet page is " + result)
 }
 
@@ -77,12 +81,12 @@ app.on('ready', () => {
     transparent: true,
     alwaysOnTop: true,
     webPreferences: {
-      // devTools: false //关闭调试工具
-      devTools: true //关闭调试工具
+      nodeIntegration: true,
+      // devTools: true //关闭调试工具
     },
     icon: './resources/icons/sheet.ico'
   })
-  sheet.loadFile('sheet.html')  
+  sheet.loadFile('sheet.html')
   // 打开开发者工具
   // sheet.webContents.openDevTools()
   console.log("sheet page创建成功！")
@@ -107,5 +111,10 @@ app.on('activate', () => {
   }
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. 也可以拆分成几个文件，然后用 require 导入。
+// 进程间通信测试
+ipcMain.on('asynchronous-message', (event, arg) => {
+  let json = path.join(__dirname, './db.json')
+  let data = json.ShowKeys
+  console.log(data)
+  event.sender.send('asynchronous-reply', data)
+})

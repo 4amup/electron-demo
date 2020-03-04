@@ -1,0 +1,14 @@
+{
+    "name": "KeyShow",
+    "version": "0.0.1",
+    "ShowKeys": [
+        {
+            "key": "CTRL+S",
+            "describe": "保存"
+        },
+        {
+            "key": "CTRL+D",
+            "describe": "删除"
+        }
+    ]
+}

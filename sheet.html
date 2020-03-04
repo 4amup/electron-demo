@@ -10,11 +10,37 @@
 </head>
 
 <body>
-    <!-- <script type="text/javascript">
-        window.addEventListener('keyup', event => {
-            console.log(event)
-        }, true)
-    </script> -->
+    <h1>ShowKeys</h1>
+    <table>
+        <thead>
+            <tr>
+                <td>快捷键</td>
+                <td>描述</td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <script type="text/javascript">
+        let ipcRenderer = require('electron').ipcRenderer;
+        ipcRenderer.on('main-process-messages', (event, data) => {
+            console.log(data);
+            let tbody = document.getElementsByTagName('tbody');
+
+            for (let index = 0; index < data.length; index++) {
+                //创建新的tr（newTr）
+                var newTr = document.createElement('tr');
+
+                //添加tr里的内容
+                newTr.innerHTML = '<td>' + data[index].key + '</td><td>' + data[index].describe + '</td>'
+
+                //把新的tr(newTr)加入到tbody中
+                tbody[0].appendChild(newTr);
+
+            }
+        });
+
+    </script>
     <h1>I'm sheet!</h1>
 </body>
 
