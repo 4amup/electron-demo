@@ -1,14 +1,26 @@
-{
-    "name": "KeyShow",
-    "version": "0.0.1",
-    "ShowKeys": [
+[{
+    "name": "chrome",
+    "keys": [
         {
             "key": "CTRL+S",
-            "describe": "保存"
+            "describe": "chrome保存"
         },
         {
             "key": "CTRL+D",
-            "describe": "删除"
+            "describe": "chrome删除"
         }
     ]
-}
+},
+{
+    "name": "eclipse",
+    "keys": [
+        {
+            "key": "CTRL+S",
+            "describe": "eclipse保存"
+        },
+        {
+            "key": "CTRL+D",
+            "describe": "eclipse删除"
+        }
+    ]
+}]

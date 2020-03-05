@@ -7,7 +7,7 @@ const spawn = require('child_process').spawn
 let tray = null
 let sheet = null
 let jsonfile = path.join(__dirname, './db.json')
-var json = JSON.parse(fs.readFileSync(jsonfile))
+let json = JSON.parse(fs.readFileSync(jsonfile))
 
 function createWindow() {
   // 创建浏览器窗口
@@ -43,14 +43,28 @@ function createWindow() {
   // win.webContents.openDevTools()
 }
 
-// 创建一个对话框，或者一个不置顶的窗口，待测试实现
+// 快捷键按键-绑定函数
 function showSheet() {
-  sheet.webContents.send('main-process-messages', json.ShowKeys);
+  // 获取当前活动窗口运行的程序名称
+  let processName = "chrome"
+
+  // 映射获取当前程序对象的快捷键列表数据
+  let data = json.filter(item => {
+    return item.name == processName
+  })
+  let send = data[0].keys
+  console.log(send)
+  // 快捷键数据表传送至showkeys主页 
+  sheet.webContents.send('main-process-messages', send);
+
+  // 根据当前窗口状态显示或隐藏showkeys页面
   if (sheet.isVisible()) {
     sheet.hide()
   } else {
     sheet.show()
   }
+
+  // 打印showkeys页面状态
   let result = sheet.isVisible() ? "open" : "colse"
   console.log("CommandOrControl+X is pressed, sheet page is " + result)
 }
@@ -63,7 +77,6 @@ app.whenReady().then(createWindow)
 // 注册快捷键
 app.on('ready', () => {
   const ret = globalShortcut.register('CommandOrControl+X', showSheet)
-  // const ret = globalShortcut.register('Alt', showSheet)
 
   if (!ret) {
     console.log('registration failed')
@@ -71,6 +84,8 @@ app.on('ready', () => {
 
   // 检查快捷键是否注册成功
   console.log("快捷键是否注册成功？" + globalShortcut.isRegistered('CommandOrControl+X'))
+
+  // 创建showkeys页面
   sheet = new BrowserWindow({
     width: 800,
     height: 600,
