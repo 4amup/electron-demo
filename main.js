@@ -53,7 +53,6 @@ function showSheet() {
     return item.name == processName
   })
   let send = data[0].keys
-  console.log(send)
   // 快捷键数据表传送至showkeys主页 
   sheet.webContents.send('main-process-messages', send);
 
@@ -61,7 +60,8 @@ function showSheet() {
   if (sheet.isVisible()) {
     sheet.hide()
   } else {
-    sheet.show()
+    // 显示窗口，却不聚焦
+    sheet.showInactive()
   }
 
   // 打印showkeys页面状态
@@ -76,14 +76,15 @@ app.whenReady().then(createWindow)
 
 // 注册快捷键
 app.on('ready', () => {
-  const ret = globalShortcut.register('CommandOrControl+X', showSheet)
+  // const ret = globalShortcut.register('CommandOrControl+X', showSheet)
+  const ret = globalShortcut.register('Alt+X', showSheet)
 
   if (!ret) {
     console.log('registration failed')
   }
 
   // 检查快捷键是否注册成功
-  console.log("快捷键是否注册成功？" + globalShortcut.isRegistered('CommandOrControl+X'))
+  console.log("快捷键是否注册成功？" + globalShortcut.isRegistered('Alt+X'))
 
   // 创建showkeys页面
   sheet = new BrowserWindow({
@@ -130,6 +131,5 @@ app.on('activate', () => {
 ipcMain.on('asynchronous-message', (event, arg) => {
   let json = path.join(__dirname, './db.json')
   let data = json.ShowKeys
-  console.log(data)
   event.sender.send('asynchronous-reply', data)
 })
