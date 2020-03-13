@@ -79,10 +79,6 @@ app.on('ready', () => {
   // const ret = globalShortcut.register('CommandOrControl+X', showSheet)
   const ret = globalShortcut.register('Alt+X', showSheet)
 
-  if (!ret) {
-    console.log('registration failed')
-  }
-
   // 检查快捷键是否注册成功
   console.log("快捷键是否注册成功？" + globalShortcut.isRegistered('Alt+X'))
 
